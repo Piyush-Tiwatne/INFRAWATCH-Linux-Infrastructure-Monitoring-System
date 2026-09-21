@@ -54,74 +54,96 @@ InfraWatch addresses this by automating metric collection, visualization, thresh
 ## Architecture
 
 InfraWatch uses two complementary monitoring paths on the Linux system.
-
 ```text
-                         Ubuntu Linux System
-                                  |
-                    +-------------+-------------+
-                    |                           |
-                    v                           v
-             Node Exporter                Python + psutil
-                 Port 9100                      |
-                    |                    +-------+-------+
-                    v                    |       |       |
-               Prometheus               v       v       v
-                 Port 9090           Alerts  Reports  Logs
-                    |
-                    v
-                 Grafana
-                 Port 3000
-                    |
-                    v
-            Monitoring Dashboard
+┌─────────────────────────────────────────────────────────────────┐
+│                       UBUNTU LINUX SYSTEM                       │
+│                                                                 │
+│  CPU • Memory • Disk • Network • Load • Uptime • Processes     │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │
+                ┌──────────────┴──────────────┐
+                │                             │
+                ▼                             ▼
+┌───────────────────────────┐     ┌──────────────────────────────┐
+│      NODE EXPORTER        │     │      INFRAWATCH PYTHON       │
+│                           │     │                              │
+│  Linux Metrics Exporter   │     │        Python + psutil       │
+│        Port 9100          │     │                              │
+└─────────────┬─────────────┘     └──────────────┬───────────────┘
+              │                                  │
+              ▼                                  │
+┌───────────────────────────┐                    │
+│        PROMETHEUS         │                    │
+│                           │                    │
+│  Metrics Collection &     │                    │
+│  Time-Series Storage      │                    │
+│        Port 9090          │                    │
+└─────────────┬─────────────┘                    │
+              │                                  │
+              ▼                                  ▼
+┌───────────────────────────┐        ┌──────────────────────────────┐
+│         GRAFANA           │        │     THRESHOLD CHECKS        │
+│                           │        │                              │
+│  Metrics Visualization   │        │   CPU • Memory • Disk        │
+│        Port 3000          │        └──────────────┬───────────────┘
+└─────────────┬─────────────┘                       │
+              │                         ┌───────────┼───────────┐
+              ▼                         ▼           ▼           ▼
+┌───────────────────────────┐     ┌──────────┐ ┌──────────┐ ┌──────────┐
+│   MONITORING DASHBOARD    │     │  ALERTS  │ │ REPORTS  │ │   LOGS   │
+└───────────────────────────┘     └──────────┘ └──────────┘ └──────────┘
 ```
 
-### Monitoring Pipeline
+### Monitoring Flow
 
 ```text
-Linux System
-     |
-     v
-Node Exporter
-     |
-     v
-Prometheus
-     |
-     v
-Grafana
-     |
-     v
-Dashboard
+Ubuntu Linux
+     │
+     ├──────────────────────────────┐
+     │                              │
+     ▼                              ▼
+Node Exporter                 InfraWatch Python
+     │                              │
+     ▼                              ├──► Threshold Checks
+Prometheus                        │        │
+     │                              │        ├──► Alerts
+     ▼                              │        ├──► Health Reports
+Grafana                            │        └──► Logs
+     │                              │
+     ▼                              │
+Dashboard                          │
+                                   
 ```
 
-Node Exporter exposes Linux system metrics, Prometheus collects and stores these metrics as time-series data, and Grafana uses Prometheus as a data source to visualize the metrics.
+### Component Responsibilities
 
-### Python Monitoring Pipeline
+| Component             | Responsibility                                              |
+| --------------------- | ----------------------------------------------------------- |
+| **Node Exporter**     | Exposes Linux system metrics                                |
+| **Prometheus**        | Collects and stores metrics as time-series data             |
+| **Grafana**           | Visualizes Prometheus metrics                               |
+| **InfraWatch Python** | Collects system health metrics using `psutil`               |
+| **Threshold Checks**  | Detects CPU, memory, and disk usage above configured limits |
+| **Alerts**            | Records threshold violations                                |
+| **Reports**           | Generates structured system health reports                  |
+| **Logs**              | Records monitoring activity                                 |
 
-```text
-Linux System
-     |
-     v
-Python + psutil
-     |
-     +----> CPU / Memory / Disk
-     |
-     +----> Network Activity
-     |
-     +----> System Load
-     |
-     +----> Uptime
-     |
-     +----> Running Processes
-     |
-     +----> Threshold Checks
-                 |
-                 +----> Alerts
-                 |
-                 +----> Health Reports
-                 |
-                 +----> Logs
 ```
+
+This version makes the architecture much easier to understand because there are **two clearly separated paths**:
+
+**Visualization path**
+
+`Linux → Node Exporter → Prometheus → Grafana → Dashboard`
+
+**Application monitoring path**
+
+`Linux → InfraWatch → Threshold Checks → Alerts / Reports / Logs`
+
+That is also a much better representation of what your project actually does.
+```
+
+`
 
 The Python monitoring layer directly collects system information using `psutil`. CPU, memory, and disk usage are evaluated against configured thresholds. When a threshold is exceeded, InfraWatch records a timestamped alert.
 
