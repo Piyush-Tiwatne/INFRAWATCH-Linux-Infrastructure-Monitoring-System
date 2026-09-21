@@ -528,3 +528,158 @@ InfraWatch
 
 This allows the monitoring system to continue operating without requiring each application to be manually started from a terminal.
 
+## Alert System
+
+InfraWatch includes a threshold-based alerting mechanism for detecting high resource utilization.
+
+The alerting system currently monitors:
+
+* CPU usage
+* Memory usage
+* Disk usage
+
+The thresholds are defined in `monitoring/config.py`:
+
+```python
+CPU_THRESHOLD = 80
+MEMORY_THRESHOLD = 80
+DISK_THRESHOLD = 80
+```
+
+When a monitored value exceeds its configured threshold, InfraWatch generates a timestamped alert.
+
+### Alert Workflow
+
+```text
+System Metrics
+      |
+      v
+Threshold Check
+      |
+      +---- Within Limit ----> No Alert
+      |
+      +---- Above Limit -----> Generate Alert
+                                      |
+                                      v
+                              alerts/alerts.log
+```
+
+### Example Alert
+
+```text
+[2026-09-21 12:04:00] High CPU usage: 90%
+```
+
+Alerts are stored in:
+
+```text
+alerts/alerts.log
+```
+
+The alert system is intentionally implemented as a local log-based mechanism. No external notification service is currently used.
+
+---
+
+## Health Reports
+
+InfraWatch automatically generates a structured health report after each monitoring cycle.
+
+The report provides a snapshot of the current Linux system health.
+
+### Report Information
+
+The report includes:
+
+* Report generation timestamp
+* Host information
+* Overall system status
+* CPU utilization
+* Memory utilization
+* Disk utilization
+* Network data sent
+* Network data received
+* 1-minute system load
+* 5-minute system load
+* 15-minute system load
+* System uptime
+* Running process count
+* CPU threshold status
+* Memory threshold status
+* Disk threshold status
+
+### Health Status
+
+CPU, memory, and disk values are compared with their configured thresholds.
+
+If all three resources are within their configured limits, the report shows:
+
+```
+Overall Status : HEALTHY
+```
+
+If one or more configured thresholds are exceeded, the report shows:
+
+```
+Overall Status : WARNING
+```
+
+### Report Location
+
+Generated reports are stored in:
+
+```
+reports/health_report.txt
+```
+
+The report is overwritten with the latest health information during each monitoring cycle.
+
+---
+
+## Logging
+
+InfraWatch maintains separate logs for general monitoring activity and threshold-based alerts.
+
+### Application Log
+
+The application log records information collected during the monitoring cycle.
+
+Location:
+
+```
+logs/infrawatch.log
+```
+
+The log can contain information such as:
+
+```
+CPU usage
+Memory usage
+Disk usage
+Network activity
+System load
+Running process count
+```
+
+Example:
+
+```
+Metrics collected - CPU: 21.4%, Memory: 42.1%, Disk: 31.7%, Network Sent: 125.32 MB, Network Received: 842.51 MB, Load: 0.48, Processes: 186
+```
+
+### Alert Log
+
+Threshold violations are recorded separately in:
+
+```
+alerts/alerts.log
+```
+
+Example:
+
+```
+[2026-09-21 12:04:00] High CPU usage: 90%
+```
+
+Separating application logs from alert logs makes it easier to distinguish normal monitoring activity from threshold violations.
+
+
