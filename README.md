@@ -1,4 +1,3 @@
-
 # InfraWatch
 
 ### Linux Infrastructure Monitoring System
@@ -49,7 +48,6 @@ InfraWatch addresses this by automating metric collection, visualization, thresh
 * Generate structured Linux health reports.
 * Maintain monitoring and alert logs.
 * Run monitoring components continuously using Linux `systemd`.
-  
 
 ## Architecture
 
@@ -80,17 +78,18 @@ InfraWatch addresses this by automating metric collection, visualization, thresh
 └─────────────┬─────────────┘                    │
               │                                  │
               ▼                                  ▼
-┌───────────────────────────┐        ┌──────────────────────────────┐
-│         GRAFANA           │        │     THRESHOLD CHECKS         │
-│                           │        │                              │
-│  Metrics Visualization   │        │   CPU • Memory • Disk         │
-│        Port 3000          │        └──────────────┬───────────────┘
-└─────────────┬─────────────┘                       │
-              │                         ┌───────────┼───────────┐
-              ▼                         ▼           ▼           ▼
-┌───────────────────────────┐     ┌──────────┐ ┌──────────┐ ┌──────────┐
-│   MONITORING DASHBOARD    │     │  ALERTS  │ │ REPORTS  │ │   LOGS   │
-└───────────────────────────┘     └──────────┘ └──────────┘ └──────────┘
+┌───────────────────────────┐     ┌──────────────────────────────┐
+│         GRAFANA           │     │       THRESHOLD CHECKS       │
+│                           │     │                              │
+│  Metrics Visualization    │     │     CPU • Memory • Disk      │
+│        Port 3000          │     └──────────────┬───────────────┘
+└─────────────┬─────────────┘                    │
+              │                                  │
+              │                    ┌─────────────┼─────────────┐
+              ▼                    ▼             ▼             ▼
+┌───────────────────────────┐ ┌──────────┐  ┌──────────┐  ┌──────────┐
+│   MONITORING DASHBOARD    │ │  ALERTS  │  │ REPORTS  │  │   LOGS   │
+└───────────────────────────┘ └──────────┘  └──────────┘  └──────────┘
 ```
 
 ### Monitoring Flow
@@ -111,7 +110,6 @@ Grafana                             │        └──► Logs
      │                              │
      ▼                              │
 Dashboard                           │
-                                   
 ```
 
 ### Component Responsibilities
@@ -127,109 +125,130 @@ Dashboard                           │
 | **Reports**           | Generates structured system health reports                  |
 | **Logs**              | Records monitoring activity                                 |
 
-```
+---
 
-```
+## How It Works
 
-```
-
-How It Works
-1. System Metric Collection
+### 1. System Metric Collection
 
 The Linux system generates information about resource utilization and system activity.
 
 InfraWatch collects the following metrics:
 
-CPU utilization
-Memory utilization
-Disk utilization
-Network data sent
-Network data received
-1-minute system load
-5-minute system load
-15-minute system load
-System uptime
-Running process count
-2. Node Exporter
+* CPU utilization
+* Memory utilization
+* Disk utilization
+* Network data sent
+* Network data received
+* 1-minute system load
+* 5-minute system load
+* 15-minute system load
+* System uptime
+* Running process count
+
+### 2. Node Exporter
 
 Node Exporter collects Linux system-level metrics and exposes them in a format that Prometheus can scrape.
 
 Node Exporter runs on:
 
+```text
 localhost:9100
-3. Prometheus
+```
+
+### 3. Prometheus
 
 Prometheus periodically scrapes metrics exposed by Node Exporter and stores them as time-series data.
 
 The current scrape interval is:
 
+```text
 15 seconds
-4. Grafana
+```
+
+### 4. Grafana
 
 Grafana connects to Prometheus and queries the collected time-series data using PromQL.
 
 The InfraWatch dashboard visualizes:
 
-CPU usage
-Memory usage
-Disk usage
-Network receive traffic
-Network transmit traffic
-System load
-System uptime
+* CPU usage
+* Memory usage
+* Disk usage
+* Network receive traffic
+* Network transmit traffic
+* System load
+* System uptime
 
 Grafana runs on:
 
+```text
 http://localhost:3000
-5. Python Monitoring
+```
+
+### 5. Python Monitoring
 
 The Python monitoring application uses psutil to directly collect system metrics.
 
 The main monitoring loop runs every:
 
+```text
 15 seconds
+```
 
 The collected values are passed to the health-check, alert, logging, and reporting components.
 
-6. Threshold Checks
+### 6. Threshold Checks
 
 InfraWatch currently applies thresholds to:
 
-CPU usage
-Memory usage
-Disk usage
+* CPU usage
+* Memory usage
+* Disk usage
 
 The configured threshold is:
 
+```text
 CPU    : 80%
 Memory : 80%
 Disk   : 80%
+```
 
 Network activity, system load, uptime, and process count are monitored and included in reports but do not currently generate alerts.
 
-7. Alert Generation
+### 7. Alert Generation
 
 When CPU, memory, or disk usage exceeds its configured threshold, InfraWatch creates a timestamped alert.
 
 Alerts are stored in:
 
+```text
 alerts/alerts.log
+```
 
 Example:
 
+```text
 [2026-09-21 12:04:00] High CPU usage: 90%
-8. Health Report Generation
+```
+
+### 8. Health Report Generation
 
 After collecting the system metrics, InfraWatch generates a structured health report containing resource utilization, network activity, system load, uptime, process count, and threshold status.
 
 The report is stored in:
 
+```text
 reports/health_report.txt
-9. Continuous Operation
+```
+
+### 9. Continuous Operation
 
 The monitoring components are configured as Linux systemd services.
 
 This allows the services to start automatically and continue operating in the background without requiring the monitoring applications to be launched manually each time.
+
+---
 
 ## Technology Stack
 
@@ -310,6 +329,8 @@ The monitoring application maintains logs of collected metrics, while threshold 
 ### Background Service Execution
 
 InfraWatch and the supporting monitoring components are configured to run using Linux `systemd`, allowing the monitoring system to operate continuously in the background.
+
+---
 
 ## Project Structure
 
@@ -510,13 +531,7 @@ InfraWatch
 
 This allows the monitoring system to continue operating without requiring each application to be manually started from a terminal.
 
-
-
-
-
-
-
-
+---
 
 ## Alert System
 
@@ -603,13 +618,13 @@ CPU, memory, and disk values are compared with their configured thresholds.
 
 If all three resources are within their configured limits, the report shows:
 
-```
+```text
 Overall Status : HEALTHY
 ```
 
 If one or more configured thresholds are exceeded, the report shows:
 
-```
+```text
 Overall Status : WARNING
 ```
 
@@ -617,7 +632,7 @@ Overall Status : WARNING
 
 Generated reports are stored in:
 
-```
+```text
 reports/health_report.txt
 ```
 
@@ -635,13 +650,13 @@ The application log records information collected during the monitoring cycle.
 
 Location:
 
-```
+```text
 logs/infrawatch.log
 ```
 
 The log can contain information such as:
 
-```
+```text
 CPU usage
 Memory usage
 Disk usage
@@ -652,7 +667,7 @@ Running process count
 
 Example:
 
-```
+```text
 Metrics collected - CPU: 21.4%, Memory: 42.1%, Disk: 31.7%, Network Sent: 125.32 MB, Network Received: 842.51 MB, Load: 0.48, Processes: 186
 ```
 
@@ -660,18 +675,19 @@ Metrics collected - CPU: 21.4%, Memory: 42.1%, Disk: 31.7%, Network Sent: 125.32
 
 Threshold violations are recorded separately in:
 
-```
+```text
 alerts/alerts.log
 ```
 
 Example:
 
-```
+```text
 [2026-09-21 12:04:00] High CPU usage: 90%
 ```
 
 Separating application logs from alert logs makes it easier to distinguish normal monitoring activity from threshold violations.
 
+---
 
 ## Grafana Dashboard
 
@@ -699,7 +715,7 @@ The dashboard is organized into three main sections:
 
 ```text
 ┌─────────────────────────────────────────────────────┐
-│ CPU Usage │ Memory Usage │ Disk Usage              │
+│ CPU Usage │ Memory Usage │ Disk Usage               │
 ├─────────────────────────────────────────────────────┤
 │ Network Receive       │ Network Transmit            │
 ├─────────────────────────────────────────────────────┤
@@ -789,6 +805,7 @@ The final repository will include a screenshot of the completed InfraWatch Grafa
 
 ![InfraWatch Grafana Dashboard](screenshots/grafana-dashboard.png)
 
+---
 
 ## Installation and Setup
 
@@ -977,6 +994,8 @@ systemctl status infrawatch
 ```
 
 A successfully configured environment should show the required services as active and running.
+
+---
 
 ## Running the Project
 
@@ -1206,6 +1225,7 @@ Grafana refresh interval   : 15 seconds
 
 These intervals are aligned for practical monitoring, while the Python monitoring process and Prometheus operate independently.
 
+---
 
 ## Limitations
 
@@ -1263,6 +1283,3 @@ Develop a centralized monitoring architecture where multiple Linux systems can s
 ### Containerized Deployment
 
 Package the monitoring components using containers to simplify deployment and make the environment easier to reproduce.
-
-
-
