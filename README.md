@@ -57,7 +57,7 @@ InfraWatch addresses this by automating metric collection, visualization, thresh
 ┌─────────────────────────────────────────────────────────────────┐
 │                       UBUNTU LINUX SYSTEM                       │
 │                                                                 │
-│  CPU • Memory • Disk • Network • Load • Uptime • Processes     │
+│  CPU • Memory • Disk • Network • Load • Uptime • Processes      │
 └──────────────────────────────┬──────────────────────────────────┘
                                │
                 ┌──────────────┴──────────────┐
@@ -81,9 +81,9 @@ InfraWatch addresses this by automating metric collection, visualization, thresh
               │                                  │
               ▼                                  ▼
 ┌───────────────────────────┐        ┌──────────────────────────────┐
-│         GRAFANA           │        │     THRESHOLD CHECKS        │
+│         GRAFANA           │        │     THRESHOLD CHECKS         │
 │                           │        │                              │
-│  Metrics Visualization   │        │   CPU • Memory • Disk        │
+│  Metrics Visualization   │        │   CPU • Memory • Disk         │
 │        Port 3000          │        └──────────────┬───────────────┘
 └─────────────┬─────────────┘                       │
               │                         ┌───────────┼───────────┐
