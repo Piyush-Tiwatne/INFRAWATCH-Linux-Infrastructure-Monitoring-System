@@ -1,0 +1,14 @@
+[Unit]
+Description=InfraWatch Linux Monitoring System
+After=network.target
+
+[Service]
+Type=simple
+User=vboxuser
+WorkingDirectory=/home/vboxuser/Desktop/infrawatch
+ExecStart=/home/vboxuser/Desktop/infrawatch/.venv/bin/python -m monitoring.main
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
