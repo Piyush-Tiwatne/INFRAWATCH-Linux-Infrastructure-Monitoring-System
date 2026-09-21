@@ -333,7 +333,7 @@ This allows the services to start automatically and continue operating in the ba
 
 The project is organized into separate components for monitoring, alerting, logging, reporting, and Prometheus configuration.
 
-```text
+
 infrawatch/
 │
 ├── README.md
@@ -357,7 +357,7 @@ infrawatch/
 │
 └── prometheus/
     └── prometheus-3.14.0.linux-amd64/
-```
+
 
 ### Directory and File Description
 
