@@ -242,6 +242,87 @@ The report is stored in:
 reports/health_report.txt
 ```
 
+## Technology Stack
+
+| Technology        | Purpose                                                        |
+| ----------------- | -------------------------------------------------------------- |
+| **Python**        | Monitoring logic, health checks, alerts, and report generation |
+| **psutil**        | Collecting system-level metrics                                |
+| **Node Exporter** | Exposing Linux system metrics                                  |
+| **Prometheus**    | Collecting and storing time-series metrics                     |
+| **Grafana**       | Visualizing infrastructure metrics                             |
+| **Ubuntu Linux**  | Monitoring environment                                         |
+| **systemd**       | Running monitoring components as background services           |
+| **Git / GitHub**  | Version control and project documentation                      |
+
+---
+
+## Features
+
+### System Monitoring
+
+InfraWatch monitors the following Linux system metrics:
+
+* CPU utilization
+* Memory utilization
+* Disk utilization
+* Network data sent
+* Network data received
+* 1-minute system load
+* 5-minute system load
+* 15-minute system load
+* System uptime
+* Running process count
+
+### Threshold-Based Alerting
+
+Configurable thresholds are implemented for:
+
+* CPU usage
+* Memory usage
+* Disk usage
+
+When a configured threshold is exceeded, InfraWatch generates a timestamped alert and stores it in the alert log.
+
+### Time-Series Monitoring
+
+Prometheus continuously collects metrics exposed by Node Exporter and stores them as time-series data.
+
+This allows infrastructure metrics to be observed over time rather than only as individual readings.
+
+### Grafana Visualization
+
+Grafana provides a dashboard for visualizing:
+
+* CPU usage
+* Memory usage
+* Disk usage
+* Network receive traffic
+* Network transmit traffic
+* System load
+* System uptime
+
+### Automated Health Reports
+
+InfraWatch generates a structured health report containing:
+
+* Current resource utilization
+* Network activity
+* System load
+* System uptime
+* Running process count
+* Threshold status
+* Overall system health status
+
+### Application and Alert Logging
+
+The monitoring application maintains logs of collected metrics, while threshold violations are stored separately in the alert log.
+
+### Background Service Execution
+
+InfraWatch and the supporting monitoring components are configured to run using Linux `systemd`, allowing the monitoring system to operate continuously in the background.
+
+
 ### 9. Continuous Operation
 
 The monitoring components are configured as Linux `systemd` services.
