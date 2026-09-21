@@ -1217,3 +1217,62 @@ Grafana refresh interval   : 15 seconds
 These intervals are aligned for practical monitoring, while the Python monitoring process and Prometheus operate independently.
 
 
+## Limitations
+
+The current version of InfraWatch is designed as a focused Linux infrastructure monitoring project and has some limitations:
+
+* Monitoring is currently focused on a single Linux system.
+* CPU, memory, and disk alerts use fixed threshold values configured in `monitoring/config.py`.
+* Network activity, system load, uptime, and process count are monitored and reported but do not currently generate alerts.
+* The Python monitoring application stores alerts and reports locally on the monitored system.
+* Grafana visualization depends on Prometheus and Node Exporter being available and running.
+* The current implementation does not provide a web interface for managing monitoring configuration.
+* Alert notifications are currently recorded in log files rather than being sent through external notification services.
+* The project does not currently provide centralized monitoring for multiple Linux servers.
+
+---
+
+## Future Improvements
+
+The project can be extended in several practical ways:
+
+### Multi-System Monitoring
+
+Extend InfraWatch to monitor multiple Linux systems from a centralized monitoring environment.
+
+### Configurable Thresholds
+
+Allow monitoring thresholds to be changed through a configuration file or management interface without modifying the Python source code.
+
+### Additional Alert Conditions
+
+Add configurable alerts for conditions such as:
+
+* High system load
+* Network traffic thresholds
+* Low available disk space
+* Process availability
+* System downtime
+
+### External Notifications
+
+Integrate alert notifications with services such as email or messaging platforms so that important alerts can be delivered without manually checking log files.
+
+### Historical Health Reports
+
+Store health reports over time to allow comparison of system performance across different monitoring periods.
+
+### Improved Dashboard Integration
+
+Expand the Grafana dashboard with additional system metrics and more detailed visualizations for long-term infrastructure analysis.
+
+### Centralized Monitoring
+
+Develop a centralized monitoring architecture where multiple Linux systems can send their infrastructure metrics to a common monitoring environment.
+
+### Containerized Deployment
+
+Package the monitoring components using containers to simplify deployment and make the environment easier to reproduce.
+
+
+
