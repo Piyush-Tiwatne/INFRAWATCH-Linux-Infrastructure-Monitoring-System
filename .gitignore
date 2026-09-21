@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+
+prometheus/prometheus-*.linux-amd64/
+
+logs/*.log
+alerts/*.log
+
+*.swp
+prometheus/*.tar.gz
+reports/*.txt
