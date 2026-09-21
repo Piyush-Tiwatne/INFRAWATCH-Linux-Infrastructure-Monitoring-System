@@ -801,7 +801,7 @@ http://localhost:3000
 
 ### Dashboard Screenshot
 
-The final repository will include a screenshot of the completed InfraWatch Grafana dashboard.
+
 
 ![InfraWatch Grafana Dashboard](screenshots/grafana-dashboard.png)
 
