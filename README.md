@@ -129,17 +129,6 @@ Dashboard                           │
 
 ```
 
-This version makes the architecture much easier to understand because there are **two clearly separated paths**:
-
-**Visualization path**
-
-`Linux → Node Exporter → Prometheus → Grafana → Dashboard`
-
-**Application monitoring path**
-
-`Linux → InfraWatch → Threshold Checks → Alerts / Reports / Logs`
-
-That is also a much better representation of what your project actually does.
 ```
 
 ```
