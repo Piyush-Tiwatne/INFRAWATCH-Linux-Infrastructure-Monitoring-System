@@ -334,10 +334,12 @@ This allows the services to start automatically and continue operating in the ba
 The project is organized into separate components for monitoring, alerting, logging, reporting, and Prometheus configuration.
 
 
+```text
 infrawatch/
 │
 ├── README.md
 ├── requirements.txt
+├── .gitignore
 │
 ├── monitoring/
 │   ├── main.py
@@ -346,17 +348,28 @@ infrawatch/
 │   ├── alerts.py
 │   └── reports.py
 │
-├── alerts/
-│   └── alerts.log
+├── examples/
+│   ├── sample_health_report.txt
+│   └── sample_alert.log
 │
-├── logs/
-│   └── infrawatch.log
+├── prometheus/
+│   └── prometheus.yml
 │
-├── reports/
-│   └── health_report.txt
+├── systemd/
+│   ├── infrawatch.service
+│   ├── node_exporter.service
+│   └── prometheus.service
 │
-└── prometheus/
-    └── prometheus-3.14.0.linux-amd64/
+└── screenshots/
+    ├── 01-grafana-dashboard.png
+    ├── 02-prometheus-targets-up.png
+    ├── 03-infrawatch-monitoring-output.png
+    ├── 04-health-report.png
+    ├── 05-alert-detection.png
+    ├── 06-all-services-running.png
+    └── 07-project-structure.png
+```
+
 
 
 ### Directory and File Description
