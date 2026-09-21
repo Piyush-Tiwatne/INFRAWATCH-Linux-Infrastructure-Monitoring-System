@@ -53,50 +53,6 @@ InfraWatch addresses this by automating metric collection, visualization, thresh
 
 ## Architecture
 
-InfraWatch uses two complementary monitoring paths on the Linux system.
-```text
-┌─────────────────────────────────────────────────────────────────┐
-│                       UBUNTU LINUX SYSTEM                       │
-│                                                                 │
-│  CPU • Memory • Disk • Network • Load • Uptime • Processes     │
-└──────────────────────────────┬──────────────────────────────────┘
-                               │
-                ┌──────────────┴──────────────┐
-                │                             │
-                ▼                             ▼
-┌───────────────────────────┐     ┌──────────────────────────────┐
-│      NODE EXPORTER        │     │      INFRAWATCH PYTHON       │
-│                           │     │                              │
-│  Linux Metrics Exporter   │     │        Python + psutil       │
-│        Port 9100          │     │                              │
-└─────────────┬─────────────┘     └──────────────┬───────────────┘
-              │                                  │
-              ▼                                  │
-┌───────────────────────────┐                    │
-│        PROMETHEUS         │                    │
-│                           │                    │
-│  Metrics Collection &     │                    │
-│  Time-Series Storage      │                    │
-│        Port 9090          │                    │
-└─────────────┬─────────────┘                    │
-              │                                  │
-              ▼                                  ▼
-┌───────────────────────────┐        ┌──────────────────────────────┐
-│         GRAFANA           │        │     THRESHOLD CHECKS        │
-│                           │        │                              │
-│  Metrics Visualization   │        │   CPU • Memory • Disk        │
-│        Port 3000          │        └──────────────┬───────────────┘
-└─────────────┬─────────────┘                       │
-              │                         ┌───────────┼───────────┐
-              ▼                         ▼           ▼           ▼
-┌───────────────────────────┐     ┌──────────┐ ┌──────────┐ ┌──────────┐
-│   MONITORING DASHBOARD    │     │  ALERTS  │ │ REPORTS  │ │   LOGS   │
-└───────────────────────────┘     └──────────┘ └──────────┘ └──────────┘
-```
-
-### Monitoring Flow
-
-```text
 Ubuntu Linux
      │
      ├──────────────────────────────┐
@@ -128,26 +84,8 @@ Dashboard                          │
 | **Reports**           | Generates structured system health reports                  |
 | **Logs**              | Records monitoring activity                                 |
 
-```
 
-This version makes the architecture much easier to understand because there are **two clearly separated paths**:
 
-**Visualization path**
-
-`Linux → Node Exporter → Prometheus → Grafana → Dashboard`
-
-**Application monitoring path**
-
-`Linux → InfraWatch → Threshold Checks → Alerts / Reports / Logs`
-
-That is also a much better representation of what your project actually does.
-```
-
-`
-
-The Python monitoring layer directly collects system information using `psutil`. CPU, memory, and disk usage are evaluated against configured thresholds. When a threshold is exceeded, InfraWatch records a timestamped alert.
-
----
 
 ## How It Works
 
