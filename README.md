@@ -988,5 +988,232 @@ systemctl status infrawatch
 
 A successfully configured environment should show the required services as active and running.
 
+## Running the Project
+
+InfraWatch can be executed manually during development or operated as a background `systemd` service.
+
+### Run InfraWatch Manually
+
+From the project directory, activate the Python virtual environment:
+
+```bash
+source .venv/bin/activate
+```
+
+Start the monitoring application:
+
+```bash
+python -m monitoring.main
+```
+
+The application continuously collects system metrics, performs threshold checks, writes monitoring information to the log, generates a health report, and waits for the next monitoring cycle.
+
+The current monitoring interval is 15 seconds.
+
+---
+
+### Run InfraWatch as a systemd Service
+
+For continuous background monitoring, InfraWatch is configured as a `systemd` service.
+
+Check the service:
+
+```bash
+systemctl status infrawatch
+```
+
+Start the service:
+
+```bash
+sudo systemctl start infrawatch
+```
+
+Restart the service:
+
+```bash
+sudo systemctl restart infrawatch
+```
+
+Stop the service:
+
+```bash
+sudo systemctl stop infrawatch
+```
+
+Enable automatic startup when Linux boots:
+
+```bash
+sudo systemctl enable infrawatch
+```
+
+View recent service logs:
+
+```bash
+journalctl -u infrawatch
+```
+
+Follow the service logs in real time:
+
+```bash
+journalctl -u infrawatch -f
+```
+
+---
+
+### Verify Monitoring Services
+
+The complete monitoring environment consists of four services:
+
+```text
+Node Exporter
+      ↓
+Prometheus
+      ↓
+Grafana
+
+InfraWatch
+      ↓
+Python-based health monitoring
+```
+
+Check all services:
+
+```bash
+systemctl status node_exporter
+systemctl status prometheus
+systemctl status grafana-server
+systemctl status infrawatch
+```
+
+The services should be active and running.
+
+---
+
+## Testing
+
+Testing was performed to verify the individual components of InfraWatch and the complete monitoring workflow.
+
+### 1. Python Monitoring Test
+
+The Python monitoring application was executed to verify that system metrics could be collected successfully.
+
+The monitoring layer was tested for:
+
+* CPU utilization
+* Memory utilization
+* Disk utilization
+* Network activity
+* System load
+* System uptime
+* Running process count
+
+---
+
+### 2. Prometheus Target Test
+
+Prometheus was verified to ensure that Node Exporter was being scraped successfully.
+
+The Node Exporter target was configured as:
+
+```text
+localhost:9100
+```
+
+The Prometheus target status was verified as:
+
+```text
+UP
+```
+
+This confirms that Prometheus was able to collect metrics from Node Exporter.
+
+---
+
+### 3. Grafana Dashboard Test
+
+Grafana was connected to Prometheus as its data source.
+
+The dashboard was tested to verify that the following metrics were displayed:
+
+* CPU usage
+* Memory usage
+* Disk usage
+* Network receive
+* Network transmit
+* System load
+* Uptime
+
+The dashboard was configured with a 15-second refresh interval.
+
+---
+
+### 4. Alert Logic Test
+
+The threshold-based alerting logic was tested independently to verify that an alert is generated when a monitored value exceeds its configured threshold.
+
+Example CPU alert test:
+
+```bash
+python -c "from monitoring.alerts import check_cpu; print(check_cpu(90))"
+```
+
+With the CPU threshold configured to `80%`, the test value of `90%` should generate an alert.
+
+Expected output:
+
+```text
+[YYYY-MM-DD HH:MM:SS] High CPU usage: 90%
+```
+
+The generated alert is also written to:
+
+```text
+alerts/alerts.log
+```
+
+This test verifies the alerting logic without requiring the system to be placed under extreme CPU load.
+
+---
+
+### 5. Health Report Test
+
+The report-generation functionality was tested to verify that InfraWatch creates a structured health report.
+
+The report contains:
+
+* Timestamp
+* Overall status
+* CPU usage
+* Memory usage
+* Disk usage
+* Network activity
+* System load
+* Uptime
+* Running processes
+* Threshold status
+
+The generated report is stored at:
+
+```text
+reports/health_report.txt
+```
+
+---
+
+### 6. Continuous Monitoring Test
+
+InfraWatch was configured to run continuously as a `systemd` service.
+
+The service was verified to remain active while the monitoring cycle continued to execute.
+
+The final monitoring configuration uses:
+
+```text
+Python monitoring interval : 15 seconds
+Prometheus scrape interval : 15 seconds
+Grafana refresh interval   : 15 seconds
+```
+
+These intervals are aligned for practical monitoring, while the Python monitoring process and Prometheus operate independently.
 
 
