@@ -133,229 +133,156 @@ Dashboard                           │
 
 ```
 
-### Component Responsibilities
+How It Works
 
-| Component             | Responsibility                                              |
-| --------------------- | ----------------------------------------------------------- |
-| **Node Exporter**     | Exposes Linux system metrics                                |
-| **Prometheus**        | Collects and stores metrics as time-series data             |
-| **Grafana**           | Visualizes Prometheus metrics                               |
-| **InfraWatch Python** | Collects system health metrics using `psutil`               |
-| **Threshold Checks**  | Detects CPU, memory, and disk usage above configured limits |
-| **Alerts**            | Records threshold violations                                |
-| **Reports**           | Generates structured system health reports                  |
-| **Logs**              | Records monitoring activity                                 |
+InfraWatch uses two monitoring paths: a Prometheus-Grafana pipeline for time-series visualization and a Python monitoring application for health checks, alerts, reports, and logging.
 
+Monitoring Architecture
+flowchart LR
+    L[Ubuntu Linux System]
 
+    L --> N[Node Exporter]
+    N --> P[Prometheus]
+    P --> G[Grafana]
+    G --> D[Monitoring Dashboard]
 
+    L --> I[InfraWatch Python]
+    I --> T[Threshold Checks]
+    T --> A[Alerts]
+    T --> R[Health Reports]
+    T --> LG[Logs]
+1. System Metric Collection
 
-## How It Works
+The Linux system provides information about resource utilization and system activity.
 
-### 1. System Metric Collection
+InfraWatch collects:
 
-The Linux system generates information about resource utilization and system activity.
+CPU utilization
+Memory utilization
+Disk utilization
+Network data sent
+Network data received
+1-minute system load
+5-minute system load
+15-minute system load
+System uptime
+Running process count
+2. Node Exporter
 
-InfraWatch collects the following metrics:
+Node Exporter exposes Linux system metrics for Prometheus to collect.
 
-* CPU utilization
-* Memory utilization
-* Disk utilization
-* Network data sent
-* Network data received
-* 1-minute system load
-* 5-minute system load
-* 15-minute system load
-* System uptime
-* Running process count
+Endpoint: localhost:9100
 
-### 2. Node Exporter
-
-Node Exporter collects Linux system-level metrics and exposes them in a format that Prometheus can scrape.
-
-Node Exporter runs on:
-
-```
-localhost:9100
-```
-
-### 3. Prometheus
+3. Prometheus
 
 Prometheus periodically scrapes metrics exposed by Node Exporter and stores them as time-series data.
 
-The current scrape interval is:
+Scrape interval: 15 seconds
 
-```
+4. Grafana
+
+Grafana connects to Prometheus and uses PromQL queries to visualize the collected metrics.
+
+The InfraWatch dashboard displays:
+
+CPU usage
+Memory usage
+Disk usage
+Network receive traffic
+Network transmit traffic
+System load
+System uptime
+
+Grafana: http://localhost:3000
+
+5. Python Monitoring
+
+The InfraWatch Python application uses psutil to collect system health metrics directly from the Linux host.
+
+The monitoring cycle runs every:
+
 15 seconds
-```
 
-### 4. Grafana
+The collected metrics are passed to the health-check, alert, logging, and reporting components.
 
-Grafana connects to Prometheus and queries the collected time-series data using PromQL.
-
-The InfraWatch dashboard visualizes:
-
-* CPU usage
-* Memory usage
-* Disk usage
-* Network receive traffic
-* Network transmit traffic
-* System load
-* System uptime
-
-Grafana runs on:
-
-```
-http://localhost:3000
-```
-
-### 5. Python Monitoring
-
-The Python monitoring application uses `psutil` to directly collect system metrics.
-
-The main monitoring loop runs every:
-
-```
-15 seconds
-```
-
-The collected values are passed to the health-check, alert, logging, and reporting components.
-
-### 6. Threshold Checks
+6. Threshold Checks
 
 InfraWatch currently applies thresholds to:
 
-* CPU usage
-* Memory usage
-* Disk usage
-
-The configured threshold is:
-
-```
-CPU    : 80%
-Memory : 80%
-Disk   : 80%
-```
+Metric	Threshold
+CPU	80%
+Memory	80%
+Disk	80%
 
 Network activity, system load, uptime, and process count are monitored and included in reports but do not currently generate alerts.
 
-### 7. Alert Generation
+7. Alert Generation
 
 When CPU, memory, or disk usage exceeds its configured threshold, InfraWatch creates a timestamped alert.
 
-Alerts are stored in:
-
-```
-alerts/alerts.log
-```
+Alert log: alerts/alerts.log
 
 Example:
 
-```
 [2026-09-21 12:04:00] High CPU usage: 90%
-```
-
-### 8. Health Report Generation
-
-After collecting the system metrics, InfraWatch generates a structured health report containing resource utilization, network activity, system load, uptime, process count, and threshold status.
-
-The report is stored in:
-
-```
-reports/health_report.txt
-```
-
-## Technology Stack
-
-| Technology        | Purpose                                                        |
-| ----------------- | -------------------------------------------------------------- |
-| **Python**        | Monitoring logic, health checks, alerts, and report generation |
-| **psutil**        | Collecting system-level metrics                                |
-| **Node Exporter** | Exposing Linux system metrics                                  |
-| **Prometheus**    | Collecting and storing time-series metrics                     |
-| **Grafana**       | Visualizing infrastructure metrics                             |
-| **Ubuntu Linux**  | Monitoring environment                                         |
-| **systemd**       | Running monitoring components as background services           |
-| **Git / GitHub**  | Version control and project documentation                      |
-
----
-
-## Features
-
-### System Monitoring
-
-InfraWatch monitors the following Linux system metrics:
-
-* CPU utilization
-* Memory utilization
-* Disk utilization
-* Network data sent
-* Network data received
-* 1-minute system load
-* 5-minute system load
-* 15-minute system load
-* System uptime
-* Running process count
-
-### Threshold-Based Alerting
-
-Configurable thresholds are implemented for:
-
-* CPU usage
-* Memory usage
-* Disk usage
-
-When a configured threshold is exceeded, InfraWatch generates a timestamped alert and stores it in the alert log.
-
-### Time-Series Monitoring
-
-Prometheus continuously collects metrics exposed by Node Exporter and stores them as time-series data.
-
-This allows infrastructure metrics to be observed over time rather than only as individual readings.
-
-### Grafana Visualization
-
-Grafana provides a dashboard for visualizing:
-
-* CPU usage
-* Memory usage
-* Disk usage
-* Network receive traffic
-* Network transmit traffic
-* System load
-* System uptime
-
-### Automated Health Reports
+8. Health Report Generation
 
 InfraWatch generates a structured health report containing:
 
-* Current resource utilization
-* Network activity
-* System load
-* System uptime
-* Running process count
-* Threshold status
-* Overall system health status
+Resource utilization
+Network activity
+System load
+System uptime
+Running process count
+Threshold status
+Overall system health status
 
-### Application and Alert Logging
+Report: reports/health_report.txt
 
-The monitoring application maintains logs of collected metrics, while threshold violations are stored separately in the alert log.
+9. Continuous Operation
 
-### Background Service Execution
+The monitoring components are configured as Linux systemd services.
 
-InfraWatch and the supporting monitoring components are configured to run using Linux `systemd`, allowing the monitoring system to operate continuously in the background.
+This allows InfraWatch, Node Exporter, Prometheus, and Grafana to run continuously in the background without requiring manual startup after each system session.
 
+Technology Stack
+Technology	Purpose
+Python	Monitoring logic, health checks, alerts, and report generation
+psutil	System-level metric collection
+Node Exporter	Exposing Linux system metrics
+Prometheus	Collecting and storing time-series metrics
+Grafana	Visualizing infrastructure metrics
+Ubuntu Linux	Monitoring environment
+systemd	Running monitoring components as background services
+Git / GitHub	Version control and project documentation
+Features
+System Monitoring
 
-### 9. Continuous Operation
+InfraWatch monitors CPU, memory, disk, network activity, system load, uptime, and running processes.
 
-The monitoring components are configured as Linux `systemd` services.
+Threshold-Based Alerting
 
-This allows the services to start automatically and continue operating in the background without requiring the monitoring applications to be launched manually each time.
+CPU, memory, and disk usage are evaluated against configurable thresholds. When a threshold is exceeded, a timestamped alert is recorded.
 
-## Project Structure
+Time-Series Monitoring
 
-The project is organized into separate components for monitoring, alerting, logging, reporting, and Prometheus configuration.
+Prometheus continuously collects metrics from Node Exporter, allowing infrastructure activity to be observed over time.
 
+Grafana Visualization
 
+The Grafana dashboard provides visual monitoring of CPU, memory, disk, network traffic, system load, and uptime.
+
+Automated Health Reports
+
+InfraWatch generates structured health reports containing current system metrics and threshold status.
+
+Application and Alert Logging
+
+Monitoring activity is recorded in the application log, while threshold violations are recorded separately in the alert log.
+
+Background Service Execution
+
+InfraWatch and the supporting monitoring components run as Linux systemd services for continuous background operation.
 ```text
 infrawatch/
 │
