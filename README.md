@@ -328,3 +328,203 @@ InfraWatch and the supporting monitoring components are configured to run using 
 The monitoring components are configured as Linux `systemd` services.
 
 This allows the services to start automatically and continue operating in the background without requiring the monitoring applications to be launched manually each time.
+
+## Project Structure
+
+The project is organized into separate components for monitoring, alerting, logging, reporting, and Prometheus configuration.
+
+```text
+infrawatch/
+│
+├── README.md
+├── requirements.txt
+│
+├── monitoring/
+│   ├── main.py
+│   ├── health_check.py
+│   ├── config.py
+│   ├── alerts.py
+│   └── reports.py
+│
+├── alerts/
+│   └── alerts.log
+│
+├── logs/
+│   └── infrawatch.log
+│
+├── reports/
+│   └── health_report.txt
+│
+└── prometheus/
+    └── prometheus-3.14.0.linux-amd64/
+```
+
+### Directory and File Description
+
+| File / Directory   | Description                                                                             |
+| ------------------ | --------------------------------------------------------------------------------------- |
+| `monitoring/`      | Contains the Python monitoring application                                              |
+| `main.py`          | Main monitoring loop that coordinates metric collection, alerts, logging, and reporting |
+| `health_check.py`  | Collects system metrics using `psutil`                                                  |
+| `config.py`        | Stores configurable resource thresholds                                                 |
+| `alerts.py`        | Performs threshold checks and records alerts                                            |
+| `reports.py`       | Generates the system health report                                                      |
+| `alerts/`          | Stores threshold-based alert logs                                                       |
+| `logs/`            | Stores InfraWatch application logs                                                      |
+| `reports/`         | Stores generated system health reports                                                  |
+| `prometheus/`      | Contains the Prometheus monitoring setup                                                |
+| `requirements.txt` | Lists Python dependencies                                                               |
+| `README.md`        | Project documentation                                                                   |
+
+---
+
+## Monitoring Components
+
+InfraWatch consists of several components that work together to provide system monitoring.
+
+### Python Monitoring Application
+
+The Python application is the main custom component of InfraWatch.
+
+It uses `psutil` to collect system-level information directly from the Linux operating system.
+
+The application consists of the following modules:
+
+#### `main.py`
+
+`main.py` acts as the main controller for the monitoring application.
+
+It:
+
+1. Collects system metrics.
+2. Performs threshold checks.
+3. Records monitoring information.
+4. Generates a health report.
+5. Displays alert information.
+6. Repeats the monitoring cycle at a configured interval.
+
+The current monitoring interval is **15 seconds**.
+
+#### `health_check.py`
+
+`health_check.py` contains functions responsible for collecting system metrics using `psutil`.
+
+The module collects:
+
+```
+CPU Usage
+Memory Usage
+Disk Usage
+Network Activity
+System Load
+System Uptime
+Running Process Count
+```
+
+#### `config.py`
+
+`config.py` contains the configurable resource thresholds used by the alerting system.
+
+Current values:
+
+```python
+CPU_THRESHOLD = 80
+MEMORY_THRESHOLD = 80
+DISK_THRESHOLD = 80
+```
+
+Keeping these values in a separate configuration file allows the thresholds to be changed without modifying the monitoring logic.
+
+#### `alerts.py`
+
+`alerts.py` performs threshold checks for CPU, memory, and disk utilization.
+
+When a value exceeds its configured threshold, the module creates a timestamped alert and writes it to:
+
+```
+alerts/alerts.log
+```
+
+#### `reports.py`
+
+`reports.py` generates a structured Linux health report.
+
+The report includes:
+
+* Resource utilization
+* Network activity
+* System load
+* System uptime
+* Running processes
+* Threshold status
+* Overall system status
+
+The generated report is stored in:
+
+```
+reports/health_report.txt
+```
+
+---
+
+### Node Exporter
+
+Node Exporter provides Linux system metrics in a format that Prometheus can collect.
+
+It runs as a Linux service and exposes metrics on:
+
+```
+localhost:9100
+```
+
+---
+
+### Prometheus
+
+Prometheus collects metrics from Node Exporter and stores them as time-series data.
+
+The current configuration uses a **15-second scrape interval**.
+
+Prometheus is used as the data source for Grafana.
+
+---
+
+### Grafana
+
+Grafana provides the visualization layer of InfraWatch.
+
+It connects to Prometheus and displays infrastructure metrics through a dashboard.
+
+The dashboard currently contains panels for:
+
+* CPU usage
+* Memory usage
+* Disk usage
+* Network receive
+* Network transmit
+* System load
+* System uptime
+
+Grafana runs locally on:
+
+```
+http://localhost:3000
+```
+
+---
+
+### systemd
+
+Linux `systemd` is used to run the monitoring components as background services.
+
+The current environment includes services for:
+
+```
+Node Exporter
+Prometheus
+Grafana
+InfraWatch
+```
+
+This allows the monitoring system to continue operating without requiring each application to be manually started from a terminal.
+
