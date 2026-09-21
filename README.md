@@ -683,3 +683,120 @@ Example:
 Separating application logs from alert logs makes it easier to distinguish normal monitoring activity from threshold violations.
 
 
+## Grafana Dashboard
+
+InfraWatch uses Grafana to visualize Linux infrastructure metrics collected by Prometheus.
+
+The dashboard provides a real-time view of system resource utilization and system activity.
+
+### Dashboard Overview
+
+The dashboard contains the following panels:
+
+| Panel            | Description                          |
+| ---------------- | ------------------------------------ |
+| CPU Usage        | Displays current CPU utilization     |
+| Memory Usage     | Displays current memory utilization  |
+| Disk Usage       | Displays root filesystem utilization |
+| Network Receive  | Displays incoming network traffic    |
+| Network Transmit | Displays outgoing network traffic    |
+| System Load      | Displays the 1-minute system load    |
+| Uptime           | Displays system uptime               |
+
+### Dashboard Layout
+
+The dashboard is organized into three main sections:
+
+```text
+┌─────────────────────────────────────────────────────┐
+│ CPU Usage │ Memory Usage │ Disk Usage              │
+├─────────────────────────────────────────────────────┤
+│ Network Receive       │ Network Transmit            │
+├─────────────────────────────────────────────────────┤
+│ System Load           │ Uptime                      │
+└─────────────────────────────────────────────────────┘
+```
+
+### Prometheus Queries
+
+Grafana uses PromQL queries to retrieve metrics from Prometheus.
+
+#### CPU Usage
+
+```promql
+100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
+```
+
+This calculates CPU utilization by measuring the percentage of CPU time that is not idle.
+
+#### Memory Usage
+
+```promql
+100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))
+```
+
+This calculates the percentage of memory currently being used.
+
+#### Disk Usage
+
+```promql
+100 * (1 - (node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay"}))
+```
+
+This calculates root filesystem utilization while excluding temporary and overlay filesystems.
+
+#### Network Receive
+
+```promql
+rate(node_network_receive_bytes_total{device!="lo"}[5m])
+```
+
+This displays the rate of incoming network traffic while excluding the loopback interface.
+
+#### Network Transmit
+
+```promql
+rate(node_network_transmit_bytes_total{device!="lo"}[5m])
+```
+
+This displays the rate of outgoing network traffic while excluding the loopback interface.
+
+#### System Load
+
+```promql
+node_load1
+```
+
+This displays the Linux 1-minute system load average.
+
+#### System Uptime
+
+```promql
+node_time_seconds - node_boot_time_seconds
+```
+
+This calculates the time elapsed since the system booted.
+
+### Dashboard Configuration
+
+The dashboard is configured with:
+
+```text
+Data Source      : Prometheus
+Time Range       : Last 15 minutes
+Refresh Interval : 15 seconds
+```
+
+Grafana runs locally on:
+
+```text
+http://localhost:3000
+```
+
+### Dashboard Screenshot
+
+The final repository will include a screenshot of the completed InfraWatch Grafana dashboard.
+
+![InfraWatch Grafana Dashboard](screenshots/grafana-dashboard.png)
+
+
