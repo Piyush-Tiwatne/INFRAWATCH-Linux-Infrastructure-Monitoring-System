@@ -800,3 +800,193 @@ The final repository will include a screenshot of the completed InfraWatch Grafa
 ![InfraWatch Grafana Dashboard](screenshots/grafana-dashboard.png)
 
 
+## Installation and Setup
+
+### Prerequisites
+
+Before setting up InfraWatch, the Linux system should have:
+
+* Ubuntu Linux
+* Python 3
+* Python virtual environment support
+* Git
+* Node Exporter
+* Prometheus
+* Grafana
+
+The project is designed to run on a Linux system where the monitoring services can operate continuously in the background.
+
+---
+
+### Clone the Repository
+
+Clone the project repository and enter the project directory:
+
+```bash
+git clone <repository-url>
+cd infrawatch
+```
+
+---
+
+### Create a Python Virtual Environment
+
+InfraWatch uses a Python virtual environment to keep its dependencies isolated from the system Python installation.
+
+Create the virtual environment:
+
+```bash
+python3 -m venv .venv
+```
+
+Activate it:
+
+```bash
+source .venv/bin/activate
+```
+
+---
+
+### Install Python Dependencies
+
+Install the Python dependencies from `requirements.txt`:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+The Python monitoring layer uses `psutil` for collecting system-level metrics.
+
+---
+
+### Verify the Python Environment
+
+Check the Python version:
+
+```bash
+python --version
+```
+
+Verify that `psutil` is available:
+
+```bash
+python -c "import psutil; print(psutil.__version__)"
+```
+
+---
+
+## Configuration
+
+InfraWatch uses separate configuration files for the Python monitoring application and Prometheus.
+
+### Python Monitoring Configuration
+
+Threshold values are defined in:
+
+```text
+monitoring/config.py
+```
+
+Current configuration:
+
+```python
+CPU_THRESHOLD = 80
+MEMORY_THRESHOLD = 80
+DISK_THRESHOLD = 80
+```
+
+These values determine when InfraWatch generates resource alerts.
+
+For example, if CPU utilization exceeds `80%`, the alerting system generates a CPU warning.
+
+---
+
+### Prometheus Configuration
+
+Prometheus is configured to collect metrics from Node Exporter.
+
+The Prometheus configuration uses a scrape interval of:
+
+```text
+15 seconds
+```
+
+The monitoring targets include:
+
+```text
+Prometheus
+Node Exporter
+```
+
+Node Exporter is available at:
+
+```text
+localhost:9100
+```
+
+Prometheus runs on:
+
+```text
+localhost:9090
+```
+
+---
+
+### Monitoring Interval
+
+The Python monitoring application currently performs a monitoring cycle every:
+
+```text
+15 seconds
+```
+
+The monitoring workflow is therefore approximately:
+
+```text
+Collect Metrics
+      ↓
+Check Thresholds
+      ↓
+Write Logs
+      ↓
+Generate Health Report
+      ↓
+Wait 15 Seconds
+      ↓
+Repeat
+```
+
+Prometheus independently scrapes Node Exporter every 15 seconds.
+
+The two monitoring paths use the same interval but are independent processes, so their measurements are not guaranteed to occur at exactly the same instant.
+
+---
+
+## Service Configuration
+
+InfraWatch is configured as a Linux `systemd` service so that the monitoring application can run continuously in the background.
+
+The supporting monitoring services are also managed by `systemd`.
+
+The environment contains:
+
+```text
+node_exporter
+prometheus
+grafana-server
+infrawatch
+```
+
+Check the status of the services using:
+
+```bash
+systemctl status node_exporter
+systemctl status prometheus
+systemctl status grafana-server
+systemctl status infrawatch
+```
+
+A successfully configured environment should show the required services as active and running.
+
+
+
