@@ -824,7 +824,7 @@ The project is designed to run on a Linux system where the monitoring services c
 Clone the project repository and enter the project directory:
 
 ```bash
-git clone <repository-url>
+git clone <https://github.com/Piyush-Tiwatne/INFRAWATCH-Linux-Infrastructure-Monitoring-System>
 cd infrawatch
 ```
 
