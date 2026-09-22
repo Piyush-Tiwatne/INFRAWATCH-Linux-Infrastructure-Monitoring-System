@@ -232,6 +232,8 @@ Example:
 [2026-09-21 12:04:00] High CPU usage: 90%
 ```
 
+![Alert detection in action](screenshots/05-alert-detection.png)
+
 ### 8. Health Report Generation
 
 After collecting the system metrics, InfraWatch generates a structured health report containing resource utilization, network activity, system load, uptime, process count, and threshold status.
@@ -361,6 +363,8 @@ infrawatch/
 └── prometheus/
     └── prometheus-3.14.0.linux-amd64/
 ```
+
+![Project structure](screenshots/07-project-Structure.png)
 
 ### Directory and File Description
 
@@ -612,6 +616,9 @@ The report includes:
 * Memory threshold status
 * Disk threshold status
 
+![Health report output](screenshots/04a-health-report.png)
+![Health report output continued](screenshots/04b-health-report.png)
+
 ### Health Status
 
 CPU, memory, and disk values are compared with their configured thresholds.
@@ -694,6 +701,8 @@ Separating application logs from alert logs makes it easier to distinguish norma
 InfraWatch uses Grafana to visualize Linux infrastructure metrics collected by Prometheus.
 
 The dashboard provides a real-time view of system resource utilization and system activity.
+
+![Grafana dashboard](screenshots/1-grafana-dashboard.png)
 
 ### Dashboard Overview
 
@@ -989,6 +998,13 @@ systemctl status infrawatch
 
 A successfully configured environment should show the required services as active and running.
 
+| Service | Status |
+| --- | --- |
+| ![InfraWatch service running](screenshots/06a-infrawatch-service-running.png) | InfraWatch |
+| ![Node Exporter service running](screenshots/06b-node_exporter-service-running.png) | Node Exporter |
+| ![Prometheus service running](screenshots/06c-prometheus-service-running.png) | Prometheus |
+| ![Grafana service running](screenshots/06d-grafana-service-running.png) | Grafana |
+
 ---
 
 ## Running the Project
@@ -1110,6 +1126,8 @@ The monitoring layer was tested for:
 * System uptime
 * Running process count
 
+![InfraWatch monitoring output](screenshots/03-infrawatch-monitoring-output.png)
+
 ---
 
 ### 2. Prometheus Target Test
@@ -1129,6 +1147,8 @@ UP
 ```
 
 This confirms that Prometheus was able to collect metrics from Node Exporter.
+
+![Prometheus targets up](screenshots/02-prometheus-targets-up.png)
 
 ---
 
