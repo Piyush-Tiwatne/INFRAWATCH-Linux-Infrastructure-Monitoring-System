@@ -799,12 +799,6 @@ Grafana runs locally on:
 http://localhost:3000
 ```
 
-### Dashboard Screenshot
-
-
-
-![InfraWatch Grafana Dashboard](screenshots/grafana-dashboard.png)
-
 ---
 
 ## Installation and Setup
