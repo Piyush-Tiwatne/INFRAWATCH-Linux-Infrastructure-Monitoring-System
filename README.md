@@ -702,7 +702,7 @@ InfraWatch uses Grafana to visualize Linux infrastructure metrics collected by P
 
 The dashboard provides a real-time view of system resource utilization and system activity.
 
-![Grafana dashboard](screenshots/1-grafana-dashboard.png)
+![Grafana dashboard](screenshots/01-grafana-dashboard.png)
 
 ### Dashboard Overview
 
